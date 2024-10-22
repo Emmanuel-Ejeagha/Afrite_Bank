@@ -22,7 +22,8 @@ const ibmPlexSerif = IBM_Plex_Serif({
 
 export const metadata: Metadata = {
   title: "Afrite Bank",
-  description: "Afrite Bank is a morden banking platform for everyone.",
+  description:
+    "Afrite Bank is a contemporary banking platform designed for all users..",
   icons: {
     icon: "/icons/logo.svg",
   },
