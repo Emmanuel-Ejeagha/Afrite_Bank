@@ -57,7 +57,7 @@ const AuthForm = ({ type }: { type: string }) => {
           state: data.state!,
           postalCode: data.postalCode!,
           dateOfBirth: data.dateOfBirth!,
-          bvn: data.bvn!,
+          ssn: data.ssn!,
           email: data.email,
           password: data.password,
         };
@@ -67,7 +67,7 @@ const AuthForm = ({ type }: { type: string }) => {
         setUser(newUser);
       }
 
-      if (type === "sign-in") {
+      if (type === "login") {
         const response = await signIn({
           email: data.email,
           password: data.password,
@@ -90,7 +90,7 @@ const AuthForm = ({ type }: { type: string }) => {
             src="/icons/logo.svg"
             width={34}
             height={34}
-            alt="Afrite logo"
+            alt="Afrite Bank logo"
           />
           <h1 className="text-26 font-ibm-plex-serif font-bold text-black-1">
             Afrite Bank
@@ -99,7 +99,7 @@ const AuthForm = ({ type }: { type: string }) => {
 
         <div className="flex flex-col gap-1 md:gap-3">
           <h1 className="text-24 lg:text-36 font-semibold text-gray-900">
-            {user ? "Link Account" : type === "sign-in" ? "Sign In" : "Sign Up"}
+            {user ? "Link Account" : type === "login" ? "Sign In" : "Sign Up"}
             <p className="text-16 font-normal text-gray-600">
               {user
                 ? "Link your account to get started"
@@ -167,8 +167,8 @@ const AuthForm = ({ type }: { type: string }) => {
                     />
                     <CustomInput
                       control={form.control}
-                      name="bvn"
-                      label="BVN"
+                      name="ssn"
+                      label="SSN"
                       placeholder="Example: 1234"
                     />
                   </div>
@@ -196,8 +196,8 @@ const AuthForm = ({ type }: { type: string }) => {
                       <Loader2 size={20} className="animate-spin" /> &nbsp;
                       Loading...
                     </>
-                  ) : type === "sign-in" ? (
-                    "Sign In"
+                  ) : type === "login" ? (
+                    "Login"
                   ) : (
                     "Sign Up"
                   )}
@@ -208,15 +208,15 @@ const AuthForm = ({ type }: { type: string }) => {
 
           <footer className="flex justify-center gap-1">
             <p className="text-14 font-normal text-gray-600">
-              {type === "sign-in"
+              {type === "login"
                 ? "Don't have an account?"
                 : "Already have an account?"}
             </p>
             <Link
-              href={type === "sign-in" ? "/sign-up" : "/sign-in"}
+              href={type === "login" ? "/sign-up" : "/login"}
               className="form-link"
             >
-              {type === "sign-in" ? "Sign up" : "Sign in"}
+              {type === "login" ? "Sign up" : "Sign in"}
             </Link>
           </footer>
         </>
