@@ -21,9 +21,30 @@ const {
   APPWRITE_BANK_COLLECTION_ID: BANK_COLLECTION_ID,
 } = process.env;
 
+// export const getUserInfo = async ({ userId }: getUserInfoProps) => {
+//   try {
+//     const { database } = await createAdminClient();
+
+//     const user = await database.listDocuments(
+//       DATABASE_ID!,
+//       USER_COLLECTION_ID!,
+//       [Query.equal("userId", [userId])]
+//     );
+
+//     return parseStringify(user.documents[0]);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 export const getUserInfo = async ({ userId }: getUserInfoProps) => {
   try {
     const { database } = await createAdminClient();
+
+    // Verify that userId is properly received
+    console.log("User ID:", userId);
+    if (!userId) {
+      throw new Error("User ID is undefined or null");
+    }
 
     const user = await database.listDocuments(
       DATABASE_ID!,
@@ -31,9 +52,14 @@ export const getUserInfo = async ({ userId }: getUserInfoProps) => {
       [Query.equal("userId", [userId])]
     );
 
+    if (user.documents.length === 0) {
+      console.error("No user found with this ID");
+      return null;
+    }
+
     return parseStringify(user.documents[0]);
   } catch (error) {
-    console.log(error);
+    console.log("Error fetching user info:", error);
   }
 };
 
@@ -42,7 +68,7 @@ export const signIn = async ({ email, password }: signInProps) => {
     const { account } = await createAdminClient();
     const session = await account.createEmailPasswordSession(email, password);
 
-    (await cookies()).set("appwrite-session", session.secret, {
+    cookies().set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
@@ -97,7 +123,7 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
 
     const session = await account.createEmailPasswordSession(email, password);
 
-    (await cookies()).set("appwrite-session", session.secret, {
+    cookies().set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
@@ -115,20 +141,52 @@ export async function getLoggedInUser() {
     const { account } = await createSessionClient();
     const result = await account.get();
 
+    if (!result || !result.$id) {
+      console.error("User ID is undefined or missing in the account result.");
+      throw new Error("User authentication failed: Invalid user data.");
+    }
+
     const user = await getUserInfo({ userId: result.$id });
+
+    if (!user) {
+      console.error(
+        "User info retrieval failed. Ensure user exists in the database."
+      );
+      throw new Error("User information could not be retrieved.");
+    }
 
     return parseStringify(user);
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching logged-in user data:", error);
     return null;
   }
 }
+
+// export async function getLoggedInUser() {
+//   // const user = await getLoggedInUser();
+//   // if (!user) {
+//   //   // Handle the case where the user is not logged in
+//   //   throw new Error("User not authenticated");
+//   // }
+
+//   try {
+//     const { account } = await createSessionClient();
+//     const result = await account.get();
+
+//     const user = await getUserInfo({ userId: result.$id });
+
+//     return parseStringify(user);
+//   } catch (error) {
+//     console.log(error);
+//     return null;
+//   }
+// }
 
 export const logoutAccount = async () => {
   try {
     const { account } = await createSessionClient();
 
-    (await cookies()).delete("appwrite-session");
+    cookies().delete("appwrite-session");
 
     await account.deleteSession("current");
   } catch (error) {
