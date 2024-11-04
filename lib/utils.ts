@@ -69,22 +69,12 @@ export const formatDateTime = (dateString: Date) => {
 export function formatAmount(amount: number): string {
   const formatter = new Intl.NumberFormat("en-NG", {
     style: "currency",
-    currency: "NGN", // Set currency to Nigerian Naira
+    currency: "NGN",
     minimumFractionDigits: 2,
   });
 
   return formatter.format(amount);
 }
-
-// export function formatAmount(amount: number): string {
-//   const formatter = new Intl.NumberFormat("en-US", {
-//     style: "currency",
-//     currency: "USD",
-//     minimumFractionDigits: 2,
-//   });
-
-//   return formatter.format(amount);
-// }
 
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
 
@@ -211,13 +201,68 @@ export const authFormSchema = (type: string) =>
     firstName: type === "login" ? z.string().optional() : z.string().min(3),
     lastName: type === "login" ? z.string().optional() : z.string().min(3),
     address1: type === "login" ? z.string().optional() : z.string().max(50),
-    state: type === "login" ? z.string().optional() : z.string().min(3),
-    city: type === "login" ? z.string().optional() : z.string().min(3),
+    city: type === "login" ? z.string().optional() : z.string().max(50),
+    state: type === "login" ? z.string().optional() : z.string().min(2).max(2),
     postalCode:
       type === "login" ? z.string().optional() : z.string().min(3).max(6),
     dateOfBirth: type === "login" ? z.string().optional() : z.string().min(3),
-    bvn: type === "login" ? z.string().optional() : z.string().min(3),
+    ssn: type === "login" ? z.string().optional() : z.string().min(3),
     // both
     email: z.string().email(),
     password: z.string().min(8),
   });
+
+export const generateRandomString = (length: number): string => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
+export const generateRandomDate = (): string => {
+  const currentDate = new Date();
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(currentDate.getDate() - 3);
+
+  return Math.random() < 0.5
+    ? currentDate.toISOString().split("T")[0]
+    : threeDaysAgo.toISOString().split("T")[0];
+};
+
+const generateRandomCategory = (): string => {
+  const categories = ["Food and Drink", "Bank Fees", "Payment", "Shopping"];
+  return categories[Math.floor(Math.random() * categories.length)] as
+    | "Food and Drink"
+    | "Bank Fees"
+    | "Payment"
+    | "Shopping";
+};
+
+// Function to generate random transactions
+export const generateTransactions = (num: number): Transaction[] => {
+  const transactions: Transaction[] = [];
+  for (let i = 0; i < num; i++) {
+    const transaction: Transaction = {
+      id: generateRandomString(24),
+      $id: generateRandomString(24),
+      name: `Transaction ${i + 1}`,
+      paymentChannel: "online",
+      type: Math.random() < 0.5 ? "debit" : "credit",
+      accountId: "Je6XRkv1AEcWrZjB4bK4TB14qwWDbjcB6PkdJ",
+      amount: parseFloat((Math.random() * 100).toFixed(2)), // Random amount between 0 and 100
+      pending: Math.random() < 0.5, // Randomly pending or not
+      category: generateRandomCategory(),
+      date: generateRandomDate(), // Current date
+      image: "https://via.placeholder.com/150",
+      $createdAt: new Date().toISOString(),
+      channel: "web",
+      senderBankId: "bank_123",
+      receiverBankId: "bank_456",
+    };
+    transactions.push(transaction);
+  }
+  return transactions;
+};
