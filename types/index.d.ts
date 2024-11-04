@@ -15,7 +15,7 @@ declare type SignUpParams = {
   state: string;
   postalCode: string;
   dateOfBirth: string;
-  bvn: string;
+  ssn: string;
   email: string;
   password: string;
 };
@@ -39,7 +39,7 @@ declare type User = {
   state: string;
   postalCode: string;
   dateOfBirth: string;
-  bvn: string;
+  ssn: string;
 };
 
 declare type NewUserParams = {
@@ -134,7 +134,7 @@ declare type NewDwollaCustomerParams = {
   state: string;
   postalCode: string;
   dateOfBirth: string;
-  bvn: string;
+  ssn: string;
 };
 
 declare interface CreditCardProps {
@@ -189,7 +189,7 @@ declare interface PlaidLinkProps {
 // };
 
 declare interface AuthFormProps {
-  type: "sign-in" | "sign-up";
+  type: "login" | "sign-up";
 }
 
 declare interface BankDropdownProps {
@@ -319,6 +319,7 @@ declare interface createBankAccountProps {
 
 declare interface getBanksProps {
   userId: string;
+  $id: string;
 }
 
 declare interface getBankProps {
